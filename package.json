@@ -19,6 +19,7 @@
     "express": "^4.17.1",
     "iexcloud_api_wrapper": "^1.1.5",
     "react-router-dom": "^5.2.0",
+    "resize-observer-polyfill": "^1.5.1",
     "typedi": "^0.8.0"
   }
 }
