@@ -5,9 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "client": "cd react-app && npm start",
+    "start": "node server/",
+    "client": "cd client && npm start",
     "server": "nodemon ./server",
-    "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\""
+    "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
+    "heroku-postbuild": "npm run build --prefix client && npm run build  --prefix client"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +21,8 @@
     "express": "^4.17.1",
     "iexcloud_api_wrapper": "^1.1.5",
     "react-router-dom": "^5.2.0",
+    "react-text-loop": "^2.3.0",
+    "react-text-transition": "^1.1.2",
     "resize-observer-polyfill": "^1.5.1",
     "typedi": "^0.8.0"
   }

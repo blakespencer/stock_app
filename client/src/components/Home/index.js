@@ -22,7 +22,7 @@ export default function Home() {
           data={data.timeSeries}
           xAccessor={dateAccessor}
           yAccessor={priceAccessor}
-          label="Price"
+          label={data.symbol}
         />
       </div>
     </>

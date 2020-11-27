@@ -5,6 +5,8 @@ const path = require('path');
 
 require('./config');
 
+app.disable('x-powered-by');
+
 app.use('/api', require('./api'));
 
 app.use((err, req, res, next) => {
@@ -13,10 +15,10 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).send(err.message || 'Internal server error.');
 });
 
-if (process.env.NODE_ENV) {
-  app.use(express.static('client/build'));
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static('react-app/build'));
   app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+    res.sendFile(path.resolve(__dirname, 'react-app', 'build', 'index.html'));
   });
 }
 app.listen(PORT, function () {

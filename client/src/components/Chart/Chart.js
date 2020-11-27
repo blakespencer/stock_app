@@ -1,6 +1,5 @@
 import React, { createContext, useContext } from 'react';
 import { dimensionsPropsType } from './utils';
-
 import './Chart.css';
 
 const ChartContext = createContext();

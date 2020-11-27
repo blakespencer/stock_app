@@ -1,10 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import * as d3 from 'd3';
-import Chart from '../Chart/Chart';
-import Line from '../Chart/Line';
-import Axis from '../Chart/Axis';
-import Gradient from '../Chart/Gradient';
+import { Axis, Chart, Gradient, Line } from '../Chart';
+import ReactTextTransition, { presets } from 'react-text-transition';
 
 import {
   useChartDimensions,
@@ -35,6 +33,7 @@ const Timeline = ({ data, xAccessor, yAccessor, label }) => {
 
   return (
     <div className="Timeline" ref={ref}>
+      <Header text={`${label}`} className="big" inline noOverflow />
       <Chart dimensions={dimensions}>
         <defs>
           <Gradient id={gradientId} colors={gradientColors} x2="0" y2="100%" />
@@ -70,5 +69,14 @@ Timeline.defaultProps = {
   xAccessor: (d) => d.x,
   yAccessor: (d) => d.y,
 };
+
+function Header({ ...props }) {
+  return (
+    // <div style={{ margin: '5px' }}>
+    <div>
+      <ReactTextTransition {...props} />
+    </div>
+  );
+}
 
 export default Timeline;
