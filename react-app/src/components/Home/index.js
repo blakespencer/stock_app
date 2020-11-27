@@ -11,7 +11,6 @@ const priceAccessor = (d) => d.close;
 
 export default function Home() {
   const [data, setData] = useState({ timeSeries: [], symbol: '' });
-  console.log(data);
   return (
     <>
       <h1>Time Series Data</h1>

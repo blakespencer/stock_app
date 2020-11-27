@@ -4,9 +4,7 @@ import { dimensionsPropsType } from './utils';
 import './Chart.css';
 
 const ChartContext = createContext();
-export const useChartDimensions = () => {
-  useContext(ChartContext);
-};
+export const useChartDimensions = () => useContext(ChartContext);
 
 const Chart = ({ dimensions, children }) => (
   <ChartContext.Provider value={dimensions}>
