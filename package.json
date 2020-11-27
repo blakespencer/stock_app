@@ -9,7 +9,7 @@
     "client": "cd client && npm start",
     "server": "nodemon ./server",
     "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
-    "heroku-postbuild": "npm run build --prefix client && npm run build  --prefix client"
+    "heroku-postbuild": "npm install --prefix client && npm run build  --prefix client"
   },
   "keywords": [],
   "author": "",
