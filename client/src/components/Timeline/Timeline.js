@@ -26,8 +26,8 @@ const formatDate = d3.timeFormat('%-b %-d');
 const gradientColors = ['rgb(226, 222, 243)', '#f8f9fa'];
 
 const Timeline = ({ data, xAccessor, yAccessor, barAccessor, label }) => {
+  const [values, setValues] = useState(formatDataLegend(data[0]));
   const [opacity, setOpacity] = useState(0);
-  const [values, setValues] = useState([formatDataLegend(data)]);
   const [closestValues, setClosestValues] = useState([new Date(), 0]);
   const [volume, setVolume] = useState(1);
   const [ref, dimensions] = useChartDimensions();
@@ -91,6 +91,13 @@ const Timeline = ({ data, xAccessor, yAccessor, barAccessor, label }) => {
   const widthAccessorScaled = (d) => barWidth;
   const heightAccessorScaled = (d) =>
     dimensions.boundedHeight * buffer - yBarScale(barAccessor(d));
+  const colorAccessor = (d, i) => {
+    return i === data.length - 1
+      ? 'rgba(255, 255, 255, 0.6)'
+      : data[i + 1].close > d.close
+      ? 'BDE7BD'
+      : 'FFB6B3';
+  };
 
   const keyAccessor = (d, i) => i;
 
@@ -128,6 +135,16 @@ const Timeline = ({ data, xAccessor, yAccessor, barAccessor, label }) => {
           xAccessor={xAccessorScaled}
           yAccessor={yAccessorScaled}
         />
+        <Bars
+          data={data}
+          xAccessor={xAccessorScaled}
+          yAccessor={yBarAccessorScaled}
+          widthAccessor={widthAccessorScaled}
+          heightAccessor={heightAccessorScaled}
+          keyAccessor={keyAccessor}
+          handleBarHover={handleBarHover}
+          colorAccessor={colorAccessor}
+        />
         <Axis dimension="x" scale={xScale} formatTick={formatDate} />
         <Axis dimension="y" scale={yScale} label="Price" />
         <ListeningRect
@@ -138,15 +155,6 @@ const Timeline = ({ data, xAccessor, yAccessor, barAccessor, label }) => {
           x={xScale(closestValues[0])}
           y={yScale(closestValues[1])}
           opacity={opacity}
-        />
-        <Bars
-          data={data}
-          xAccessor={xAccessorScaled}
-          yAccessor={yBarAccessorScaled}
-          widthAccessor={widthAccessorScaled}
-          heightAccessor={heightAccessorScaled}
-          keyAccessor={keyAccessor}
-          handleBarHover={handleBarHover}
         />
       </Chart>
     </div>

@@ -11,6 +11,7 @@ const Bars = ({
   widthAccessor,
   heightAccessor,
   handleBarHover,
+  colorAccessor,
   ...props
 }) => (
   <React.Fragment>
@@ -28,7 +29,7 @@ const Bars = ({
           width={d3.max([callAccessor(widthAccessor, d, i), 1])}
           height={d3.max([callAccessor(heightAccessor, d, i), 0])}
           style={{
-            fill: color,
+            fill: callAccessor(colorAccessor(d, i)),
           }}
           onMouseOver={handleBarHover}
           data-volume={data[i].volume}
@@ -45,6 +46,7 @@ Bars.propTypes = {
   yAccessor: accessorPropsType,
   widthAccessor: accessorPropsType,
   heightAccessor: accessorPropsType,
+  colorAccessor: accessorPropsType,
 };
 
 Bars.defaultProps = {};
