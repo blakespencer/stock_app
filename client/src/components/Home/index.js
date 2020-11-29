@@ -1,29 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Search from './Search';
 // import Chart from '../ReactChart';
 // import { TimeSeries } from '../Charts';
 import Timeline from '../Timeline/Timeline';
 import * as d3 from 'd3';
+import axios from 'axios';
 
 const parseDate = d3.timeParse('%Y-%m-%d');
 const dateAccessor = (d) => parseDate(d.date);
 const priceAccessor = (d) => d.close;
+const volumeAccessor = (d) => d.volume;
 
 export default function Home() {
-  const [data, setData] = useState({ timeSeries: [], symbol: '' });
+  const [data, setData] = useState({ timeSeries: [], symbol: 'SPY' });
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get('/api/av/SPY');
+        setData(res.data);
+        setLoading(false);
+      } catch (error) {}
+    };
+
+    if (loading) fetchData();
+  }, [loading]);
+
   return (
     <>
       <h1>Time Series Data</h1>
       <Search setData={setData} />
-
-      {/* {data.data.length ? <TimeSeries data={data} /> : <div></div>} */}
       <div className="App__charts">
-        <Timeline
-          data={data.timeSeries}
-          xAccessor={dateAccessor}
-          yAccessor={priceAccessor}
-          label={data.symbol}
-        />
+        {data.timeSeries.length ? (
+          <Timeline
+            data={data.timeSeries}
+            xAccessor={dateAccessor}
+            yAccessor={priceAccessor}
+            barAccessor={volumeAccessor}
+            label={data.symbol}
+          />
+        ) : null}
       </div>
     </>
   );

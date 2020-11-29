@@ -71,7 +71,6 @@ function AxisHorizontal({ dimensions, label, formatTick, scale, ...props }) {
 function AxisVertical({ dimensions, label, formatTick, scale, ...props }) {
   const numberOfTicks = dimensions.boundedHeight / 70;
   const ticks = scale.ticks(numberOfTicks);
-  console.log(dimensions.boundedHeight, ticks);
   return (
     <g className="Axis AxisVertical" {...props}>
       <line className="Axis__line" y2={dimensions.boundedHeight} />
