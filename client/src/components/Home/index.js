@@ -13,19 +13,15 @@ const volumeAccessor = (d) => d.volume;
 
 export default function Home() {
   const [data, setData] = useState({ timeSeries: [], symbol: 'SPY' });
-  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await axios.get('/api/av/SPY');
         setData(res.data);
-        setLoading(false);
       } catch (error) {}
     };
-
-    if (loading) fetchData();
-  }, [loading]);
-
+    fetchData();
+  }, []);
   return (
     <>
       <h1>Time Series Data</h1>

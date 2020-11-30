@@ -13,6 +13,7 @@ import {
 } from '../Chart';
 import ToolBox from './ToolBox';
 import ReactTextTransition, { presets } from 'react-text-transition';
+import Select from 'react-select';
 
 import {
   useChartDimensions,
@@ -20,23 +21,25 @@ import {
   useUniqueId,
 } from '../Chart/utils';
 import './Timeline.css';
-import { formatDataLegend } from './utils';
+import { formatDataLegend, movingAverage } from './utils';
 
 const formatDate = d3.timeFormat('%-b %-d');
-const gradientColors = ['rgb(226, 222, 243)', '#f8f9fa'];
+const gradientColors = ['rgba(226, 222, 243, 1)', 'rgba(226, 222, 243, 0.2)'];
 
 const Timeline = ({ data, xAccessor, yAccessor, barAccessor, label }) => {
   const [opacity, setOpacity] = useState(0);
   const [values, setValues] = useState(formatDataLegend(data[0]));
   const [closestValues, setClosestValues] = useState([new Date(), 0]);
+  const [numberOfPricePoints, setNumberOfPricePoints] = useState({
+    label: 'Select Moving Average Points',
+    value: null,
+  });
   const [ref, dimensions] = useChartDimensions();
   const gradientId = useUniqueId('Timeline-gradient');
   const xScale = d3
     .scaleTime()
     .domain(d3.extent(data, xAccessor))
     .range([0, dimensions.boundedWidth]);
-  const xMin = d3.min(data, xAccessor);
-  const xMax = d3.max(data, xAccessor);
   const yMin = d3.min(data, yAccessor);
   const yMax = d3.max(data, yAccessor);
   const buffer = 0.2;
@@ -44,7 +47,6 @@ const Timeline = ({ data, xAccessor, yAccessor, barAccessor, label }) => {
 
   const yScale = d3
     .scaleLinear()
-    // .domain(d3.extent(data, yAccessor))
     .domain([yMin - yBuffer, yMax])
     .range([dimensions.boundedHeight, 0])
     .nice();
@@ -88,7 +90,6 @@ const Timeline = ({ data, xAccessor, yAccessor, barAccessor, label }) => {
   const barWidth =
     Math.round(dimensions.boundedWidth / data.length) - barPadding;
   const widthAccessorScaled = (d) => barWidth;
-  // const xBarAccessorScaled = (d) => xAccessorScaled(d) - widthAccessorScaled(d);
   const xBarAccessorScaled = (d) => xAccessorScaled(d);
   const heightAccessorScaled = (d) =>
     dimensions.boundedHeight * buffer - yBarScale(barAccessor(d));
@@ -100,9 +101,16 @@ const Timeline = ({ data, xAccessor, yAccessor, barAccessor, label }) => {
       : 'FFB6B3';
 
   const keyAccessor = (d, i) => i;
+  const handleChange = (evt) => setNumberOfPricePoints(evt);
   return (
     <div className="Timeline" ref={ref}>
-      <Header text={`${label}`} className="big" inline noOverflow />
+      <div className="Timeline-header">
+        <Header text={`${label}`} className="big" inline noOverflow />
+        <SelectNumberOfPricePoints
+          defaultValue={numberOfPricePoints}
+          onChange={handleChange}
+        />
+      </div>
       <ToolBox
         closestValueX={closestValues[0]}
         closestValueY={closestValues[1]}
@@ -110,7 +118,6 @@ const Timeline = ({ data, xAccessor, yAccessor, barAccessor, label }) => {
         yScale={yScale}
         dimensions={dimensions}
         opacity={opacity}
-        widthAccessor={widthAccessorScaled}
       />
       <Chart dimensions={dimensions}>
         <Legend
@@ -119,9 +126,27 @@ const Timeline = ({ data, xAccessor, yAccessor, barAccessor, label }) => {
             fill: 'rgba(0, 0, 0, 0.4)',
           }}
         />
+        {numberOfPricePoints.value && (
+          <Line
+            data={movingAverage(data, numberOfPricePoints.value)}
+            xAccessor={xAccessorScaled}
+            yAccessor={yAccessorScaled}
+            // style={{ stroke: 'rgba(153, 128, 250, 1)', strokeWidth: 2 }
+            style={{ stroke: 'FFDC97', strokeWidth: 2 }}
+          />
+        )}
         <defs>
           <Gradient id={gradientId} colors={gradientColors} x2="0" y2="100%" />
         </defs>
+        <Bars
+          data={data}
+          xAccessor={xBarAccessorScaled}
+          yAccessor={yBarAccessorScaled}
+          widthAccessor={widthAccessorScaled}
+          heightAccessor={heightAccessorScaled}
+          keyAccessor={keyAccessor}
+          colorAccessor={colorAccessor}
+        />
         <Line
           type="area"
           data={data}
@@ -134,15 +159,9 @@ const Timeline = ({ data, xAccessor, yAccessor, barAccessor, label }) => {
           data={data}
           xAccessor={xAccessorScaled}
           yAccessor={yAccessorScaled}
-        />
-        <Bars
-          data={data}
-          xAccessor={xBarAccessorScaled}
-          yAccessor={yBarAccessorScaled}
-          widthAccessor={widthAccessorScaled}
-          heightAccessor={heightAccessorScaled}
-          keyAccessor={keyAccessor}
-          colorAccessor={colorAccessor}
+          style={{
+            stroke: 'rgba(153, 128, 250, 0.8)',
+          }}
         />
         <Axis dimension="x" scale={xScale} formatTick={formatDate} />
         <Axis dimension="y" scale={yScale} label="Price" />
@@ -175,10 +194,25 @@ Timeline.defaultProps = {
 
 function Header({ ...props }) {
   return (
-    // <div style={{ margin: '5px' }}>
     <div>
       <span>Ticker: </span> <ReactTextTransition {...props} />
     </div>
+  );
+}
+
+function SelectNumberOfPricePoints({ ...props }) {
+  return (
+    <Select
+      {...props}
+      className="Timeline-select"
+      options={[
+        { label: 'Select Moving Average Points', value: null },
+        { label: '15', value: 15 },
+        { label: '45', value: 45 },
+      ]}
+      isSearchable={false}
+      minMenuWidth={1000}
+    />
   );
 }
 

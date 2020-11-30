@@ -40,3 +40,15 @@
   font-size: 1.1em;
   line-height: 1.4em;
 }
+
+.Timeline-header {
+  display: flex;
+}
+
+.Timeline-header > * {
+  margin-right: 15px;
+}
+
+.Timeline-select {
+  width: 200px;
+}

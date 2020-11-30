@@ -11,7 +11,6 @@ const ToolBox = ({
   yScale,
   dimensions,
   opacity,
-  widthAccessor,
 }) => {
   const ref = useRef();
   let { marginLeft, marginTop } = dimensions;
@@ -21,7 +20,7 @@ const ToolBox = ({
   const coordinates = [x, y];
 
   if (ref.current) {
-    calcPosition(ref, dimensions, coordinates, widthAccessor);
+    calcPosition(ref, dimensions, coordinates);
   }
   return (
     <div

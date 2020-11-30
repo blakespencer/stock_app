@@ -11,7 +11,7 @@ export const formatDataLegend = (data) => {
   return output;
 };
 
-export const calcPosition = (ref, dimensions, coordinates, widthAccessor) => {
+export const calcPosition = (ref, dimensions, coordinates) => {
   let {
     marginLeft,
     marginRight,
@@ -30,3 +30,15 @@ export const calcPosition = (ref, dimensions, coordinates, widthAccessor) => {
   }
   if (y < -marginTop) coordinates[1] = -marginTop - 10;
 };
+
+export const movingAverage = (data, numberOfPricePoints) =>
+  data.map((row, index, total) => {
+    const start = Math.max(0, index - numberOfPricePoints);
+    const end = index;
+    const subset = total.slice(start, end + 1);
+    const sum = subset.reduce((a, b) => a + b['close'], 0);
+    return {
+      date: row['date'],
+      close: sum / subset.length,
+    };
+  });
