@@ -4,38 +4,38 @@ import * as d3 from 'd3';
 import { dimensionsPropsType } from './utils';
 import { useChartDimensions } from './Chart';
 
-const Legend = ({ dimension, values, ...props }) => (
-  <>
-    {values.map((v, i) => (
-      <g
-        style={{
-          position: 'absolute',
-          transform: `translate(100px, ${25 * i + 5}px)`,
-        }}
-      >
-        <text
-          style={{
-            transform: 'translate(15px, 9px)',
-            fill: '#ddd',
-            strokeWidth: 10,
-          }}
-          fontSize="2em"
-        >{`${v['key']} ${v['value']}`}</text>
-      </g>
-    ))}
-  </>
-);
+const defaultFontSize = 16;
 
-Legend.propTypes = {
-  dimensions: dimensionsPropsType,
-  values: PropTypes.array,
+const Legend = ({ style, values, textStyle, ...props }) => {
+  const dimensions = useChartDimensions();
+  return (
+    <g style={{ transform: `translate(10px, 10px)`, ...style }} {...props}>
+      {values.map((v, i) => (
+        <g
+          style={{
+            transform: `translate(0px, ${
+              textStyle.fontSize * i || defaultFontSize * i
+            }px)`,
+          }}
+        >
+          <text
+            style={{ fontSize: defaultFontSize, ...textStyle }}
+          >{`${v['key']} ${v['value']}`}</text>
+        </g>
+      ))}
+    </g>
+  );
 };
 
-const formatNumber = d3.format(',');
+Legend.propTypes = {
+  values: PropTypes.array,
+  textStyle: PropTypes.object,
+};
+
 Legend.defaultProps = {
-  dimension: 'x',
-  scale: null,
-  formatTick: formatNumber,
+  textStyle: {
+    fontSize: defaultFontSize,
+  },
 };
 
 export default Legend;

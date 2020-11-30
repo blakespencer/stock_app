@@ -26,17 +26,17 @@ const formatDate = d3.timeFormat('%-b %-d');
 const gradientColors = ['rgb(226, 222, 243)', '#f8f9fa'];
 
 const Timeline = ({ data, xAccessor, yAccessor, barAccessor, label }) => {
-  const [values, setValues] = useState(formatDataLegend(data[0]));
   const [opacity, setOpacity] = useState(0);
+  const [values, setValues] = useState(formatDataLegend(data[0]));
   const [closestValues, setClosestValues] = useState([new Date(), 0]);
-  const [volume, setVolume] = useState(1);
   const [ref, dimensions] = useChartDimensions();
   const gradientId = useUniqueId('Timeline-gradient');
   const xScale = d3
     .scaleTime()
     .domain(d3.extent(data, xAccessor))
     .range([0, dimensions.boundedWidth]);
-
+  const xMin = d3.min(data, xAccessor);
+  const xMax = d3.max(data, xAccessor);
   const yMin = d3.min(data, yAccessor);
   const yMax = d3.max(data, yAccessor);
   const buffer = 0.2;
@@ -70,7 +70,6 @@ const Timeline = ({ data, xAccessor, yAccessor, barAccessor, label }) => {
 
     setClosestValues([closestXValue, closestYValue]);
     setOpacity(1);
-    setVolume(data[closestIndex]['volume']);
     setValues(formatDataLegend(data[closestIndex]));
   };
 
@@ -85,40 +84,41 @@ const Timeline = ({ data, xAccessor, yAccessor, barAccessor, label }) => {
     .nice();
   const yBarAccessorScaled = (d) =>
     yBarScale(barAccessor(d)) + dimensions.boundedHeight * (1 - buffer);
-  const barPadding = 10;
+  const barPadding = 7;
   const barWidth =
     Math.round(dimensions.boundedWidth / data.length) - barPadding;
   const widthAccessorScaled = (d) => barWidth;
+  // const xBarAccessorScaled = (d) => xAccessorScaled(d) - widthAccessorScaled(d);
+  const xBarAccessorScaled = (d) => xAccessorScaled(d);
   const heightAccessorScaled = (d) =>
     dimensions.boundedHeight * buffer - yBarScale(barAccessor(d));
-  const colorAccessor = (d, i) => {
-    return i === data.length - 1
+  const colorAccessor = (d, i) =>
+    i === data.length - 1
       ? 'rgba(255, 255, 255, 0.6)'
-      : data[i + 1].close > d.close
+      : d.close > data[i + 1].close
       ? 'BDE7BD'
       : 'FFB6B3';
-  };
 
   const keyAccessor = (d, i) => i;
-
-  const handleBarHover = (e) => {
-    // console.log(e.target.dataset.volume);
-    setVolume(e.target.dataset.volume);
-  };
   return (
     <div className="Timeline" ref={ref}>
       <Header text={`${label}`} className="big" inline noOverflow />
-      {/* <h1>{volume}</h1>  */}
-      <Legend dimensions={dimensions} values={values} />
       <ToolBox
+        closestValueX={closestValues[0]}
+        closestValueY={closestValues[1]}
         xScale={xScale}
         yScale={yScale}
         dimensions={dimensions}
         opacity={opacity}
-        closestValueX={closestValues[0]}
-        closestValueY={closestValues[1]}
+        widthAccessor={widthAccessorScaled}
       />
       <Chart dimensions={dimensions}>
+        <Legend
+          values={values}
+          textStyle={{
+            fill: 'rgba(0, 0, 0, 0.4)',
+          }}
+        />
         <defs>
           <Gradient id={gradientId} colors={gradientColors} x2="0" y2="100%" />
         </defs>
@@ -137,12 +137,11 @@ const Timeline = ({ data, xAccessor, yAccessor, barAccessor, label }) => {
         />
         <Bars
           data={data}
-          xAccessor={xAccessorScaled}
+          xAccessor={xBarAccessorScaled}
           yAccessor={yBarAccessorScaled}
           widthAccessor={widthAccessorScaled}
           heightAccessor={heightAccessorScaled}
           keyAccessor={keyAccessor}
-          handleBarHover={handleBarHover}
           colorAccessor={colorAccessor}
         />
         <Axis dimension="x" scale={xScale} formatTick={formatDate} />
