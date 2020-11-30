@@ -23,7 +23,7 @@ export const combineChartDimensions = (dimensions) => {
   let parsedDimensions = {
     marginTop: 40,
     marginRight: 30,
-    marginBottom: 45,
+    marginBottom: 70,
     marginLeft: 75,
     ...dimensions,
   };
