@@ -50,5 +50,25 @@
 }
 
 .Timeline-select {
-  width: 200px;
+  width: 270px;
+}
+
+.Timeline-select:hover {
+  /* border: 1px plum solid; */
+}
+
+.pulsate-css {
+  animation: pulsate 1s ease-out;
+  animation-iteration-count: infinite;
+  opacity: 0;
+
+  /* you dont need the stuff below, but its what I used to create the loading circle */
+  border: 3px solid #999;
+  border-radius: 30px;
+  height: 18px;
+  width: 18px;
+  position: relative;
+  display: inline-block;
+  margin-top: 20px;
+  text-align: center;
 }

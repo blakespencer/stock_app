@@ -22,6 +22,7 @@ import {
 } from '../Chart/utils';
 import './Timeline.css';
 import { formatDataLegend, movingAverage } from './utils';
+import { style } from 'd3';
 
 const formatDate = d3.timeFormat('%-b %-d');
 const gradientColors = ['rgba(226, 222, 243, 1)', 'rgba(226, 222, 243, 0.2)'];
@@ -213,6 +214,36 @@ function Header({ ...props }) {
 }
 
 function SelectNumberOfPricePoints({ ...props }) {
+  const customStyles = {
+    option: (provided, state) => {
+      return {
+        ...provided,
+        backgroundColor: state.isSelected ? 'rgba(153, 128, 250, 1)' : 'white',
+        ':active': {
+          backgroundColor: 'rgba(153, 128, 250, 0.5)',
+        },
+      };
+    },
+    control: (base, state) => {
+      console.log(base, state);
+      return {
+        ...base,
+        borderColor:
+          state.isFocused || state.menuIsOpen
+            ? 'rgba(153, 128, 250, 1)'
+            : state.theme.colors.neutral20,
+        boxShadow: state.isFocused
+          ? '0 0 0 1px rgba(153, 128, 250, 1)'
+          : 'none',
+        '&:hover': {
+          ...base['&:hover'],
+          borderColor: state.menuIsOpen
+            ? 'rgba(153, 128, 250, 1)'
+            : state.theme.colors.neutral30,
+        },
+      };
+    },
+  };
   return (
     <Select
       {...props}
@@ -224,6 +255,7 @@ function SelectNumberOfPricePoints({ ...props }) {
       ]}
       isSearchable={false}
       minMenuWidth={1000}
+      styles={customStyles}
     />
   );
 }
