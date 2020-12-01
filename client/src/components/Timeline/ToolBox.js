@@ -27,7 +27,6 @@ const ToolBox = ({
       id="tooltip"
       className="Tooltip"
       style={{
-        // transformOrigin: '0% 0%',
         transform: `translate(${coordinates[0]}px, calc(${coordinates[1]}px + 2em))`,
         opacity,
       }}

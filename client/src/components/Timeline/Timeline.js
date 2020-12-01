@@ -36,10 +36,22 @@ const Timeline = ({ data, xAccessor, yAccessor, barAccessor, label }) => {
   });
   const [ref, dimensions] = useChartDimensions();
   const gradientId = useUniqueId('Timeline-gradient');
+
   const xScale = d3
     .scaleTime()
-    .domain(d3.extent(data, xAccessor))
-    .range([0, dimensions.boundedWidth]);
+    .domain(
+      data.map((d, i) => {
+        return xAccessor(data[data.length - 1 - i]);
+      })
+    )
+    .range(
+      d3.range(
+        0,
+        dimensions.boundedWidth,
+        dimensions.boundedWidth / data.length
+      )
+    );
+
   const yMin = d3.min(data, yAccessor);
   const yMax = d3.max(data, yAccessor);
   const buffer = 0.2;
@@ -126,15 +138,6 @@ const Timeline = ({ data, xAccessor, yAccessor, barAccessor, label }) => {
             fill: 'rgba(0, 0, 0, 0.4)',
           }}
         />
-        {numberOfPricePoints.value && (
-          <Line
-            data={movingAverage(data, numberOfPricePoints.value)}
-            xAccessor={xAccessorScaled}
-            yAccessor={yAccessorScaled}
-            // style={{ stroke: 'rgba(153, 128, 250, 1)', strokeWidth: 2 }
-            style={{ stroke: 'FFDC97', strokeWidth: 2 }}
-          />
-        )}
         <defs>
           <Gradient id={gradientId} colors={gradientColors} x2="0" y2="100%" />
         </defs>
@@ -163,6 +166,15 @@ const Timeline = ({ data, xAccessor, yAccessor, barAccessor, label }) => {
             stroke: 'rgba(153, 128, 250, 0.8)',
           }}
         />
+        {numberOfPricePoints.value && (
+          <Line
+            data={movingAverage(data, numberOfPricePoints.value)}
+            xAccessor={xAccessorScaled}
+            yAccessor={yAccessorScaled}
+            // style={{ stroke: 'rgba(153, 128, 250, 1)', strokeWidth: 2 }
+            style={{ stroke: 'FFDC97', strokeWidth: 2 }}
+          />
+        )}
         <Axis dimension="x" scale={xScale} formatTick={formatDate} />
         <Axis dimension="y" scale={yScale} label="Price" />
         <ListeningRect

@@ -31,8 +31,10 @@ export const calcPosition = (ref, dimensions, coordinates) => {
   if (y < -marginTop) coordinates[1] = -marginTop - 10;
 };
 
-export const movingAverage = (data, numberOfPricePoints) =>
-  data.map((row, index, total) => {
+export const movingAverage = (data, numberOfPricePoints) => {
+  data = [...data].reverse();
+  return data.map((row, index, total) => {
+    console.log('Total', total);
     const start = Math.max(0, index - numberOfPricePoints);
     const end = index;
     const subset = total.slice(start, end + 1);
@@ -42,3 +44,4 @@ export const movingAverage = (data, numberOfPricePoints) =>
       close: sum / subset.length,
     };
   });
+};
