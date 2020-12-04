@@ -86,7 +86,7 @@ function AxisVertical({ dimensions, label, formatTick, scale, ...props }) {
         <text
           className="Axis__label"
           style={{
-            transform: `translate(-56px, ${
+            transform: `translate(-60px, ${
               dimensions.boundedHeight / 2
             }px) rotate(-90deg)`,
           }}

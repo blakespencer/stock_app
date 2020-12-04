@@ -21,8 +21,7 @@ import {
   useUniqueId,
 } from '../Chart/utils';
 import './Timeline.css';
-import { formatDataLegend, movingAverage } from './utils';
-import { style } from 'd3';
+import { formatDataLegend, movingAverage, customStyles } from './utils';
 
 const formatDate = d3.timeFormat('%-b %-d');
 const gradientColors = ['rgba(226, 222, 243, 1)', 'rgba(226, 222, 243, 0.2)'];
@@ -133,12 +132,6 @@ const Timeline = ({ data, xAccessor, yAccessor, barAccessor, label }) => {
         opacity={opacity}
       />
       <Chart dimensions={dimensions}>
-        <Legend
-          values={values}
-          textStyle={{
-            fill: 'rgba(0, 0, 0, 0.4)',
-          }}
-        />
         <defs>
           <Gradient id={gradientId} colors={gradientColors} x2="0" y2="100%" />
         </defs>
@@ -187,6 +180,12 @@ const Timeline = ({ data, xAccessor, yAccessor, barAccessor, label }) => {
           y={yScale(closestValues[1])}
           opacity={opacity}
         />
+        <Legend
+          values={values}
+          textStyle={{
+            fill: 'rgba(0, 0, 0, 0.4)',
+          }}
+        />
       </Chart>
     </div>
   );
@@ -214,36 +213,6 @@ function Header({ ...props }) {
 }
 
 function SelectNumberOfPricePoints({ ...props }) {
-  const customStyles = {
-    option: (provided, state) => {
-      return {
-        ...provided,
-        backgroundColor: state.isSelected ? 'rgba(153, 128, 250, 1)' : 'white',
-        ':active': {
-          backgroundColor: 'rgba(153, 128, 250, 0.5)',
-        },
-      };
-    },
-    control: (base, state) => {
-      console.log(base, state);
-      return {
-        ...base,
-        borderColor:
-          state.isFocused || state.menuIsOpen
-            ? 'rgba(153, 128, 250, 1)'
-            : state.theme.colors.neutral20,
-        boxShadow: state.isFocused
-          ? '0 0 0 1px rgba(153, 128, 250, 1)'
-          : 'none',
-        '&:hover': {
-          ...base['&:hover'],
-          borderColor: state.menuIsOpen
-            ? 'rgba(153, 128, 250, 1)'
-            : state.theme.colors.neutral30,
-        },
-      };
-    },
-  };
   return (
     <Select
       {...props}

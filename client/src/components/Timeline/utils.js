@@ -1,3 +1,5 @@
+import * as d3 from 'd3';
+
 export const formatDataLegend = (data) => {
   if (!data) return [];
   const output = [
@@ -43,4 +45,106 @@ export const movingAverage = (data, numberOfPricePoints) => {
       close: sum / subset.length,
     };
   });
+};
+
+export const customStyles = {
+  option: (provided, state) => {
+    return {
+      ...provided,
+      backgroundColor: state.isSelected ? 'rgba(153, 128, 250, 1)' : 'white',
+      ':active': {
+        backgroundColor: 'rgba(153, 128, 250, 0.5)',
+      },
+    };
+  },
+  control: (base, state) => {
+    return {
+      ...base,
+      borderColor:
+        state.isFocused || state.menuIsOpen
+          ? 'rgba(153, 128, 250, 1)'
+          : state.theme.colors.neutral20,
+      boxShadow: state.isFocused ? '0 0 0 1px rgba(153, 128, 250, 1)' : 'none',
+      '&:hover': {
+        ...base['&:hover'],
+        borderColor: state.menuIsOpen
+          ? 'rgba(153, 128, 250, 1)'
+          : state.theme.colors.neutral30,
+      },
+    };
+  },
+};
+
+export const formatDataPercentageChange = (data) => {
+  const accumulateData = [];
+  let prevAccPercentChange = initialPercentageChange(data);
+  data.forEach((d, i) => {
+    if (i === data.length - 1) {
+      accumulateData.push({
+        ...d,
+        percentChange: 0,
+        accPercentChange: 0,
+      });
+      return;
+    }
+
+    const oldValue = data[i + 1].close;
+    const newValue = d.close;
+    const delta = newValue - oldValue;
+    const percentChange = (delta / oldValue) * 100;
+
+    const accPercentChange = prevAccPercentChange - percentChange;
+
+    accumulateData.push({
+      ...d,
+      percentChange,
+      accPercentChange,
+    });
+    prevAccPercentChange = accPercentChange;
+  });
+
+  return accumulateData;
+};
+
+function initialPercentageChange(data) {
+  if (!data.length) {
+    return 0;
+  }
+  const oldValue = data[data.length - 1].close;
+  const newValue = data[0].close;
+  return calcPercentageChange(oldValue, newValue);
+}
+
+function calcPercentageChange(oldValue, newValue) {
+  const delta = newValue - oldValue;
+  const percentChange = (delta / oldValue) * 100;
+  return percentChange;
+}
+
+export const xScaleGen = (dimensions, xAccessor, data) =>
+  d3
+    .scaleTime()
+    .domain(
+      data.map((d, i) => {
+        return xAccessor(data[data.length - 1 - i]);
+      })
+    )
+    .range(
+      d3.range(
+        0,
+        dimensions.boundedWidth,
+        dimensions.boundedWidth / data.length
+      )
+    );
+
+export const yScaleGen = (dimensions, yAccessor, data, buffer) => {
+  const yMin = d3.min(data, yAccessor);
+  const yMax = d3.max(data, yAccessor);
+  const yBuffer = (yMax - yMin) * buffer;
+
+  return d3
+    .scaleLinear()
+    .domain([yMin - yBuffer, yMax])
+    .range([dimensions.boundedHeight, 0])
+    .nice();
 };

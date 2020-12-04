@@ -7,9 +7,23 @@ import { useChartDimensions } from './Chart';
 const defaultFontSize = 16;
 
 const Legend = ({ style, values, textStyle, ...props }) => {
-  const dimensions = useChartDimensions();
   return (
     <g style={{ transform: `translate(10px, 10px)`, ...style }} {...props}>
+      <rect
+        style={{
+          width: `${d3.max(values, (d) => {
+            const charPix = 9.5;
+            const basePix = d['key'].length;
+            if (typeof d['value'] === 'number')
+              return (d['value'].toString().length + basePix) * charPix;
+            return (d['value'].length + basePix) * charPix;
+          })}px`,
+          height: `${values.length * 16.7}px`,
+          transform: 'translate(-4px,-16px)',
+          fill: 'rgba(255, 255, 255, 0.7)',
+          rx: '5',
+        }}
+      ></rect>
       {values.map((v, i) => (
         <g
           style={{
