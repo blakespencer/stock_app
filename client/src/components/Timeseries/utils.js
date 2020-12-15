@@ -3,10 +3,29 @@ import * as d3 from 'd3';
 export const formatDate = d3.timeFormat('%-b %-d');
 
 export function genXScale(data, xAccessor, dimensions) {
+  console.log(
+    d3.range(
+      0,
+      dimensions.boundedWidth + 0.5,
+      dimensions.boundedWidth / data.length
+    ),
+    // .map((el) => el * (11.125 / data.length)),
+    dimensions.boundedWidth
+  );
+  // return d3
+  //   .scaleTime()
+  //   .domain(d3.extent(data, xAccessor))
+  //   .range([0, dimensions.boundedWidth]);
   return d3
     .scaleTime()
-    .domain(d3.extent(data, xAccessor))
-    .range([0, dimensions.boundedWidth]);
+    .domain(data.map(xAccessor))
+    .range(
+      d3.range(
+        0,
+        dimensions.boundedWidth + 0.5,
+        dimensions.boundedWidth / (data.length - 1)
+      )
+    );
 }
 
 export function genYScale(data, yAccessor, dimensions) {

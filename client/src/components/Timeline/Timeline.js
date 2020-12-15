@@ -52,8 +52,8 @@ const Timeline = ({ data, xAccessor, yAccessor, barAccessor, label }) => {
     .range(
       d3.range(
         0,
-        dimensions.boundedWidth,
-        dimensions.boundedWidth / data.length
+        dimensions.boundedWidth + 0.5,
+        dimensions.boundedWidth / (data.length - 1)
       )
     );
 
