@@ -22,7 +22,6 @@ export default function Home() {
         const res = await axios.get('/api/av/SPY');
         setData(res.data);
         setSpyData(res.data);
-        console.log('Hello');
       } catch (error) {}
     };
     fetchData();

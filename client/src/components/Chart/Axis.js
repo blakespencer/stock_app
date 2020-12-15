@@ -8,6 +8,7 @@ const axisComponentsByDimension = {
   x: AxisHorizontal,
   y: AxisVertical,
 };
+
 const Axis = ({ dimension, ...props }) => {
   const dimensions = useChartDimensions();
   const Component = axisComponentsByDimension[dimension];
@@ -22,6 +23,7 @@ Axis.propTypes = {
   scale: PropTypes.func,
   label: PropTypes.string,
   formatTick: PropTypes.func,
+  right: PropTypes.bool,
 };
 
 const formatNumber = d3.format(',');
@@ -68,16 +70,30 @@ function AxisHorizontal({ dimensions, label, formatTick, scale, ...props }) {
   );
 }
 
-function AxisVertical({ dimensions, label, formatTick, scale, ...props }) {
+function AxisVertical({
+  dimensions,
+  label,
+  formatTick,
+  scale,
+  right,
+  ...props
+}) {
   const numberOfTicks = dimensions.boundedHeight / 70;
   const ticks = scale.ticks(numberOfTicks);
+  const position = right ? dimensions.boundedWidth : 0;
+
   return (
     <g className="Axis AxisVertical" {...props}>
-      <line className="Axis__line" y2={dimensions.boundedHeight} />
+      <line
+        className="Axis__line"
+        y2={dimensions.boundedHeight}
+        x1={position}
+        x2={position}
+      />
       {ticks.map((tick, i) => (
         <text
-          className="Axis__tick"
-          transform={`translate(-16, ${scale(tick)})`}
+          className={`Axis__tick ${right ? 'Axis__tick-right' : ''}`}
+          transform={`translate(${right ? position + 8 : -16}, ${scale(tick)})`}
         >
           {formatTick(tick)}
         </text>
@@ -86,7 +102,7 @@ function AxisVertical({ dimensions, label, formatTick, scale, ...props }) {
         <text
           className="Axis__label"
           style={{
-            transform: `translate(-60px, ${
+            transform: `translate(${right ? position + 60 : -60}px, ${
               dimensions.boundedHeight / 2
             }px) rotate(-90deg)`,
           }}

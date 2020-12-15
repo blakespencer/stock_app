@@ -46,6 +46,10 @@
   text-anchor: end;
 }
 
+.AxisVertical .Axis__tick.Axis__tick-right {
+  text-anchor: start;
+}
+
 .Circles__circle {
   fill: #9980fa;
   transition: all 0.3s ease-out;

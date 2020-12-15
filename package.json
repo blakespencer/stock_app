@@ -16,15 +16,18 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.21.0",
+    "classnames": "^2.2.6",
     "concurrently": "^5.3.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "iexcloud_api_wrapper": "^1.1.5",
+    "moment": "^2.29.1",
     "react-router-dom": "^5.2.0",
     "react-select": "^3.1.1",
     "react-text-loop": "^2.3.0",
     "react-text-transition": "^1.1.2",
     "resize-observer-polyfill": "^1.5.1",
+    "styled-components": "^5.2.1",
     "typedi": "^0.8.0"
   }
 }

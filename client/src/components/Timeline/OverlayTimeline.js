@@ -51,11 +51,9 @@ const OverlayTimeline = ({
   const [ref, dimensions] = useChartDimensions();
   // const gradientId = useUniqueId('Timeline-gradient');
   const spyData = useMemo(() => formatDataPercentageChange(spyDataRaw), [
-    label === 'SPY',
+    spyDataRaw,
   ]);
   const [data, setData] = useState(formatDataPercentageChange(dataRaw));
-
-  // console.log(data);
 
   useEffect(() => {
     setData(formatDataPercentageChange(dataRaw));
@@ -174,7 +172,7 @@ const OverlayTimeline = ({
           xAccessor={xAccessorScaled}
           yAccessor={yAccessorScaled}
           style={{
-            stroke: 'rgba(255, 128, 250, 0.8)',
+            stroke: 'rgba(0, 0, 0, 0.5)',
           }}
         />
         {/* {numberOfPricePoints.value && (

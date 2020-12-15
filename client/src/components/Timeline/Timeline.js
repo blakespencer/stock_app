@@ -34,8 +34,13 @@ const Timeline = ({ data, xAccessor, yAccessor, barAccessor, label }) => {
     label: 'Select Moving Average Points',
     value: null,
   });
+  const [clicked, setClicked] = useState(false);
   const [ref, dimensions] = useChartDimensions();
   const gradientId = useUniqueId('Timeline-gradient');
+
+  const handleClick = () => {
+    setClicked(!clicked);
+  };
 
   const xScale = d3
     .scaleTime()
@@ -122,6 +127,7 @@ const Timeline = ({ data, xAccessor, yAccessor, barAccessor, label }) => {
           defaultValue={numberOfPricePoints}
           onChange={handleChange}
         />
+        <button onClick={handleClick}>Percentage Change</button>
       </div>
       <ToolBox
         closestValueX={closestValues[0]}
@@ -135,12 +141,28 @@ const Timeline = ({ data, xAccessor, yAccessor, barAccessor, label }) => {
         <defs>
           <Gradient id={gradientId} colors={gradientColors} x2="0" y2="100%" />
         </defs>
+        <line
+          className="Axis__line"
+          y1={yScale(yAccessor(data[data.length - 1]))}
+          y2={yScale(yAccessor(data[data.length - 1]))}
+          x1={xScale(d3.min(data, xAccessor))}
+          x2={
+            clicked
+              ? xScale(d3.min(data, xAccessor))
+              : xScale(d3.max(data, xAccessor))
+          }
+          strokeDasharray="4"
+          style={{
+            transition: 'all 0.3s ease-out',
+          }}
+          strokeDashoffset={xScale(d3.max(data, xAccessor))}
+        />
         <Bars
           data={data}
           xAccessor={xBarAccessorScaled}
-          yAccessor={yBarAccessorScaled}
+          yAccessor={clicked ? y0AccessorScaled : yBarAccessorScaled}
           widthAccessor={widthAccessorScaled}
-          heightAccessor={heightAccessorScaled}
+          heightAccessor={clicked ? () => 0 : heightAccessorScaled}
           keyAccessor={keyAccessor}
           colorAccessor={colorAccessor}
         />
@@ -171,6 +193,12 @@ const Timeline = ({ data, xAccessor, yAccessor, barAccessor, label }) => {
         )}
         <Axis dimension="x" scale={xScale} formatTick={formatDate} />
         <Axis dimension="y" scale={yScale} label="Price" />
+        <Legend
+          values={values}
+          textStyle={{
+            fill: 'rgba(0, 0, 0, 0.4)',
+          }}
+        />
         <ListeningRect
           handleMouseMove={handleMouseMove}
           handleMouseLeave={handleMouseLeave}
@@ -179,12 +207,6 @@ const Timeline = ({ data, xAccessor, yAccessor, barAccessor, label }) => {
           x={xScale(closestValues[0])}
           y={yScale(closestValues[1])}
           opacity={opacity}
-        />
-        <Legend
-          values={values}
-          textStyle={{
-            fill: 'rgba(0, 0, 0, 0.4)',
-          }}
         />
       </Chart>
     </div>

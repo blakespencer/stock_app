@@ -76,50 +76,19 @@ export const customStyles = {
 };
 
 export const formatDataPercentageChange = (data) => {
+  if (!data.length) return data;
+  const baseValue = data[data.length - 1].close;
   const accumulateData = [];
-  let prevAccPercentChange = initialPercentageChange(data);
+
   data.forEach((d, i) => {
-    if (i === data.length - 1) {
-      accumulateData.push({
-        ...d,
-        percentChange: 0,
-        accPercentChange: 0,
-      });
-      return;
-    }
-
-    const oldValue = data[i + 1].close;
-    const newValue = d.close;
-    const delta = newValue - oldValue;
-    const percentChange = (delta / oldValue) * 100;
-
-    const accPercentChange = prevAccPercentChange - percentChange;
-
     accumulateData.push({
       ...d,
-      percentChange,
-      accPercentChange,
+      accPercentChange: d.close / baseValue - 1,
     });
-    prevAccPercentChange = accPercentChange;
   });
 
   return accumulateData;
 };
-
-function initialPercentageChange(data) {
-  if (!data.length) {
-    return 0;
-  }
-  const oldValue = data[data.length - 1].close;
-  const newValue = data[0].close;
-  return calcPercentageChange(oldValue, newValue);
-}
-
-function calcPercentageChange(oldValue, newValue) {
-  const delta = newValue - oldValue;
-  const percentChange = (delta / oldValue) * 100;
-  return percentChange;
-}
 
 export const xScaleGen = (dimensions, xAccessor, data) =>
   d3
