@@ -61,8 +61,6 @@
   animation: pulsate 1s ease-out;
   animation-iteration-count: infinite;
   opacity: 0;
-
-  /* you dont need the stuff below, but its what I used to create the loading circle */
   border: 3px solid #999;
   border-radius: 30px;
   height: 18px;

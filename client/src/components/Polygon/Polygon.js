@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Timeseries from '../Timeseries';
 import moment from 'moment';
+import { SearchInput, SearchForm } from './styles';
+import ReactTextTransition, { presets } from 'react-text-transition';
 
 export default function FetchTicker({ children }) {
   const [data, setData] = useState({});
@@ -21,11 +23,24 @@ export default function FetchTicker({ children }) {
     <>
       <Search handleSubmit={handleSubmit}></Search>
       {data.results ? (
-        <Timeseries
-          data={data.results}
-          xAccessor={(d) => d.t}
-          yAccessor={(d) => d.c}
-        />
+        <>
+          <Header
+            text={`${data.ticker}`}
+            className="big"
+            inline
+            // noOverflow
+            style={{
+              fontSize: 40,
+              fontWeight: 900,
+              width: 'auto',
+            }}
+          />
+          <Timeseries
+            data={data.results}
+            xAccessor={(d) => d.t}
+            yAccessor={(d) => d.c}
+          />
+        </>
       ) : null}
     </>
   );
@@ -39,20 +54,18 @@ function Search({ handleSubmit }) {
   };
 
   return (
-    <div>
-      <form
-        onSubmit={(evt) => {
-          handleSubmit(evt, query);
-          setQuery('');
-        }}
-      >
-        <input
-          onChange={handleChange}
-          placeholder="search ticker"
-          value={query}
-        />
-      </form>
-    </div>
+    <SearchForm
+      onSubmit={(evt) => {
+        handleSubmit(evt, query);
+        setQuery('');
+      }}
+    >
+      <SearchInput
+        onChange={handleChange}
+        placeholder="Search ticker"
+        value={query}
+      />
+    </SearchForm>
   );
 }
 
@@ -65,4 +78,8 @@ async function fetchData(ticker, setData) {
   } catch (error) {
     console.log(error);
   }
+}
+
+function Header({ ...props }) {
+  return <ReactTextTransition {...props} />;
 }
