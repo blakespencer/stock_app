@@ -8,6 +8,7 @@ import {
   Legend,
   ListeningRect,
   Circle,
+  Bars,
 } from '../Chart';
 import { useChartDimensions, useUniqueId } from '../Chart/utils';
 import { ChartArea } from './styles';
@@ -20,9 +21,15 @@ import {
   formatDataLegend,
   handleMouseLeave,
   handleMouseMove,
+  genYBarScale,
 } from './utils';
 
-export default function Timeseries({ data, xAccessor, yAccessor }) {
+export default function Timeseries({
+  data,
+  xAccessor,
+  yAccessor,
+  barAccessor,
+}) {
   const [ref, dimensions] = useChartDimensions({
     marginLeft: 30,
     marginRight: 75,
@@ -41,8 +48,8 @@ export default function Timeseries({ data, xAccessor, yAccessor }) {
     xAccessor,
     dimensions,
   ]);
-
-  const yScale = useMemo(() => genYScale(data, yAccessor, dimensions), [
+  const buffer = 0.2;
+  const yScale = useMemo(() => genYScale(data, yAccessor, dimensions, buffer), [
     data,
     yAccessor,
     dimensions,
@@ -52,7 +59,23 @@ export default function Timeseries({ data, xAccessor, yAccessor }) {
   const yAccessorScaled = (d) => yScale(yAccessor(d));
   const y0AccessorScaled = yScale(yScale.domain()[0]);
 
+  const yBarScale = genYBarScale(data, barAccessor, dimensions, buffer);
+  const yBarAccessorScaled = (d) =>
+    yBarScale(barAccessor(d)) + dimensions.boundedHeight * (1 - buffer);
+  const xBarAccessorScaled = (d) => xAccessorScaled(d);
+  const heightAccessorScaled = (d) =>
+    dimensions.boundedHeight * buffer - yBarScale(barAccessor(d));
+  const colorAccessor = (d, i) =>
+    i === 0
+      ? 'rgba(255, 255, 255, 0.6)'
+      : yAccessor(d) > yAccessor(data[i - 1])
+      ? '#BDE7BD'
+      : '#FFB6B3';
+
   const gradientId = useUniqueId('Timeline-gradient');
+  const barPadding = 7;
+  const barWidth =
+    Math.round(dimensions.boundedWidth / data.length) - barPadding;
 
   return (
     <>
@@ -74,6 +97,17 @@ export default function Timeseries({ data, xAccessor, yAccessor }) {
               y2="100%"
             />
           </defs>
+          <Bars
+            data={data}
+            xAccessor={xBarAccessorScaled}
+            // yAccessor={clicked ? y0AccessorScaled : yBarAccessorScaled}
+            yAccessor={yBarAccessorScaled}
+            widthAccessor={(d) => barWidth}
+            // heightAccessor={clicked ? () => 0 : heightAccessorScaled}
+            heightAccessor={heightAccessorScaled}
+            keyAccessor={(d, i) => i}
+            colorAccessor={colorAccessor}
+          />
           <Line
             type="area"
             data={data}
@@ -98,6 +132,11 @@ export default function Timeseries({ data, xAccessor, yAccessor }) {
               fill: 'rgba(0, 0, 0, 0.4)',
             }}
           />
+          <Circle
+            x={xScale(closestValues[0])}
+            y={yScale(closestValues[1])}
+            opacity={opacity}
+          />
           <ListeningRect
             handleMouseMove={(evt) =>
               handleMouseMove(
@@ -113,11 +152,6 @@ export default function Timeseries({ data, xAccessor, yAccessor }) {
             handleMouseLeave={() =>
               handleMouseLeave(mouseValues, setMouseValues)
             }
-          />
-          <Circle
-            x={xScale(closestValues[0])}
-            y={yScale(closestValues[1])}
-            opacity={opacity}
           />
         </Chart>
       </ChartArea>

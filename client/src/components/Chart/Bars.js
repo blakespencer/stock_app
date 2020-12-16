@@ -17,17 +17,24 @@ const Bars = ({
   return (
     <React.Fragment>
       {data.map((d, i) => {
+        let x =
+          callAccessor(xAccessor, d, i) - callAccessor(widthAccessor, d, i) / 2;
+
+        let width = d3.max([callAccessor(widthAccessor, d, i), 1]);
+        if (i === 0 || i === data.length - 1) {
+          x = callAccessor(xAccessor, d, i);
+          width /= 2;
+        }
+        if (i === data.length - 1) x -= width;
+
         return (
           <rect
             {...props}
             className="Bars__rect"
             key={keyAccessor(d, i)}
-            x={
-              callAccessor(xAccessor, d, i) -
-              callAccessor(widthAccessor, d, i) / 2
-            }
+            x={x}
             y={callAccessor(yAccessor, d, i)}
-            width={d3.max([callAccessor(widthAccessor, d, i), 1])}
+            width={width}
             height={d3.max([callAccessor(heightAccessor, d, i), 0])}
             style={{
               fill: callAccessor(colorAccessor(d, i)),

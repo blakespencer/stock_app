@@ -39,6 +39,7 @@ export default function FetchTicker({ children }) {
             data={data.results}
             xAccessor={(d) => d.t}
             yAccessor={(d) => d.c}
+            barAccessor={(d) => d.v}
           />
         </>
       ) : null}

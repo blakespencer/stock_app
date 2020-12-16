@@ -15,16 +15,23 @@ export function genXScale(data, xAccessor, dimensions) {
     );
 }
 
-export function genYScale(data, yAccessor, dimensions) {
+export function genYScale(data, yAccessor, dimensions, buffer) {
   const yMin = d3.min(data, yAccessor);
   const yMax = d3.max(data, yAccessor);
-  const buffer = 0.2;
   const yBuffer = (yMax - yMin) * buffer;
 
   return d3
     .scaleLinear()
     .domain([yMin - yBuffer, yMax])
     .range([dimensions.boundedHeight, 0])
+    .nice();
+}
+
+export function genYBarScale(data, barAccessor, dimensions, buffer) {
+  return d3
+    .scaleLinear()
+    .domain(d3.extent(data, barAccessor))
+    .range([dimensions.boundedHeight * buffer, 0])
     .nice();
 }
 
